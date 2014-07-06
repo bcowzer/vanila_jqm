@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="jquery.2.mobile-1.4.1.css">
+<link href='http://fonts.googleapis.com/css?family=Courgette' rel='stylesheet' type='text/css'>
+<!--script files for jquery mobile functions and jquery-->
+<script src="jquery-1.11.1.js"></script>
+<script src="jquery.mobile-1.4.1.min.js"></script>
+<script src="phonegap.js"></script>   
+  </head>
+  <body>
+    
+      <script language="javascript">
+<!--//
+/*This Script http://www.javascriptkit.com/script/cut76.shtml*/
+
+function pasuser(form) {
+if (form.id.value=="guest") { 
+if (form.pass.value=="123") {              
+//$.mobile.changePage("#page2")
+location="#page2"
+} else {
+alert("Invalid Password")
+}
+} else {  alert("Invalid UserID")
+}
+}
+//-->
+</script>
+
+<script type="text/javascript" charset="utf-8">
+ 
+   
+    function onPhotoFileSuccess(imageData) {
+        alert ("something");
+        var userPhoto = document.getElementById('userPhoto');
+ 
+
+        userPhoto.style.display = 'block';
+ 
+
+        userPhoto.src = imageData;
+    }
+
+
+    function capturePhotoWithFile() {
+        navigator.camera.getPicture(onPhotoFileSuccess, onFail, {
+            quality: 50, 
+            destinationType: Camera.DestinationType.FILE_URI 
+        });
+    }
+
+    function onFail(message) {
+        alert('Failed because: ' + message);
+    }
+ 
+</script>
+
+
+
+    <div data-role="page" id="home">
+<div data-role="main" class="ui-content">
+      <form method="post" action="demoform.asp" id="login">
+        <h2 class="form-signin-heading">Please sign in</h2>
+       <input type="text" name="id" placeholder="Username" id="user">
+          
+        <input name="pass" type="password" placeholder="Password" id="pass">
+       
+        <button class="btn btn-lg btn-primary btn-block" input type="button" value ="Login"  onClick="pasuser(this.form)">Sign in</button>
+      </form>
+
+    </div>
+ </div>
+  <div data-role="page" id="page2">
+    <div data-role="header" data-position="fixed">
+    <h1>ClassIS Appdoes it work</h1></div><br>
+<div data-role="main" class="ui-content">
+  <button onclick="capturePhotoWithFile();">Capture a Photo With the Device Camera</button> <br>
+  <img width = "300" height = "450" id="userPhoto" src="" />
+      <div class ="container" id='params' style='display:'>
+  Class
+    <form name = "userclass">
+  <select name='class' onChange = "classid = this.value" id='class' data-native-menu="false">
+    <option value='0'> </option>
+    <option value='674'>EYNAA</option>
+    <option value='675'>EYRAA</option>
+  </select>
+        </form>
+  <br>
+  Profile
+    <form name = "userprofile">
+  <select name='profile' onChange= "profileid = this.value" id='profile' data-native-menu="false">
+        <option value='0'></option>
+    <option value='ELG'>Early learning Goals</option>
+    <option value='EYFS2436'>Early Years Foundation Stage 2436</option>
+    <option value='EYFS3648'>Early Years Foundation Stage 3648</option>
+  </select>
+        </form>
+  <br>
+  Component
+    <form name ="usercomponent">
+  <select name='component' onChange="componentid = this.value" id='component' data-native-menu="false">
+    <option value='0'> </option>
+    <option value='UW:TW'>UW:TW</option>
+    <option value='PD:MH'>PD:MH</option>
+    <option value='component3'>Component 3</option>
+  </select>
+        </form>
+  <br>
+  <input type="button" value='Go' onclick="submit();">
+</div>
+
+<!--When parameters are selected it's the window will be seen, where the teacher is able to select students, a statement and upload multiples pictures-->
+<div class="container" id='statementsbody' style='display:none;'>
+  Classis<br>
+  Students<br>
+  <form method="post" action="demoform.asp" id="tester">
+  <select name='students' onChange="sid = this.value" id='students'>
+  </select>
+        
+  <!--<div id='students' style='float:left;'></div><br>
+ <div id='students'></div>-->
+  Statements<br>
+<!--<select name='statements' onChange="skillid = this.value" id='statements'>
+  </select>-->
+  <a href="#statements" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all">Select Skills</a>
+
+<div data-role="popup" id="statements">
+  <p>This is a simple popup.</p>
+</div>
+  </form>
+  <!--<div id='statements'></div>-->
+  <div id='attachphoto'>
+    Attachment<br><input type="file" name="img" id='photo' multiple><br><br>
+    <input type="button" value='Upload' onclick="return upload();">
+  </div>
+  <hr>
+  <img src="" alt="Image preview" id="preview">
+</div>
+<script>
+
+  /*Local stored apiURL,username,token,schoolid*/
+  var apiURL='http://demo.learningdata.net/apis/classis';
+  var user='admin2';
+  var token='132fbdf473cd76432357a3e146032b28';
+  var schoolid='demoes';
+  var classid=document.userclass.class.value;
+  var componentid= document.usercomponent.component.value;
+  var profileid=document.userprofile.profile.value;
+
+  function statementsbody(){
+    //$('div.params').replaceWith($('div.statementsbody'));
+    document.getElementById('statementsbody').style.display='block';
+    /*Get classes*/
+    var xmlhttpc=new XMLHttpRequest();
+    xmlhttpc.onreadystatechange=function(){
+      if(xmlhttpc.readyState==4 && xmlhttpc.status==200){
+        var data=JSON.parse(xmlhttpc.responseText);
+        if(data.success){
+          console.log(data.classes);
+          }
+        }
+      }
+    xmlhttpc.open("GET",apiURL+"?schoolid="+schoolid+"&username="+user+"&token="+token+"&action=getclasses",true);
+    xmlhttpc.send();
+
+/*Get students*/
+    var xmlhttp=new XMLHttpRequest();
+    xmlhttp.onreadystatechange=function(){
+      if(xmlhttp.readyState==4 && xmlhttp.status==200){
+        var data=JSON.parse(xmlhttp.responseText);
+        if(data.success){
+          console.log(data.students);
+          
+          for(i=0;i<data.students.length;i++){
+            //var studentdiv=document.createElement('div');
+            //studentdiv.id="student";
+            //studentdiv.innerHTML=data.students[i].forename+" "+data.students[i].surname+"</br>";
+            //document.getElementById('students').appendChild(studentdiv);
+            var stusel=document.createElement("option");
+            //stusel.value="student"
+            stusel.innerHTML="<option value='"+data.students[i].sid+"'>"+data.students[i].forename+" "+data.students[i].surname+"</option>";
+            //stusel.innerHTML="<option>"+data.students[i].forename+" "+data.students[i].surname"</option>";
+            document.getElementById('students').appendChild(stusel);
+            }
+          }
+        else{
+          for(i=0;i<data.errors.length;i++){
+            console.log(data.errors);
+            alert(data.errors[i]);
+            }
+          }
+        }
+      }
+    xmlhttp.open("GET",apiURL+"?schoolid="+schoolid+"&username="+user+"&token="+token+"&action=getstudents&classid="+classid,true);
+    xmlhttp.send();
+ /*$.ajaxSetup({
+    dataFilter: function(data, type) {
+        if (type === 'json') {
+            data.replace('for (#);', '');
+            return JSON.parse(data);
+        }
+
+        return data;
+    }
+});*/       
+        
+/*Get statements*/
+    var xmlhttps=new XMLHttpRequest();
+    xmlhttps.onreadystatechange=function(){
+      if(xmlhttps.readyState==4 && xmlhttps.status==200){
+        var data=JSON.parse(xmlhttps.responseText);
+        if(data.success){
+          console.log(data.statements);
+          for(i=0;i<data.statements.length;i++){
+            var statementdiv=document.createElement('div');
+            statementdiv.id="statement";
+            statementdiv.innerHTML="<input type='radio' name='statement' value='"+data.statements[i].skillid+"'>"+data.statements[i].statement;
+            document.getElementById('statements').appendChild(statementdiv);
+
+            /*var statementdiv=document.createElement('div');
+            statementdiv.id="statement";
+            statementdiv.innerHTML="<input type='radio' name='statement' value='"+data.statements[i].skillid+"'>"+data.statements[i].statement;
+            document.getElementById('statements').appendChild(statementdiv);*/
+            }
+
+          }
+        }
+      }
+    xmlhttps.open("GET",apiURL+"?schoolid="+schoolid+"&username="+user+"&token="+token+"&action=getstatements&componentid="+componentid+"&profileid="+profileid,true);
+    xmlhttps.send();
+    }
+    
+    
+    /*Upload pictures*/
+    var upload=function() {
+      var photo=document.getElementById("photo");
+      var files=photo.files;
+      var imagesdata={};
+      for(var i=0;i<files.length;i++){
+        var reader=new FileReader();
+        reader.onload = (function(theFile){
+          var fileName=theFile.name;
+          var count=i;
+          var filesno=files.length-1;
+          return function(e){
+            imagesdata[count]={};
+            imagesdata[count]['photo']=e.target.result;
+            imagesdata[count]['name']=fileName;
+            document.getElementById('preview').src=e.target.result;
+            if(count==filesno){
+              var checkboxes=document.getElementsByName('students[]');
+              var checkedCheckboxes={};
+              for(var i=0; i<checkboxes.length; i++) {
+                if(checkboxes[i].checked){
+                  checkedCheckboxes[i]=checkboxes[i].value;
+                  }
+                }
+
+              var radiobuttons=document.getElementsByName('statement');
+              var checkedRadio='';
+              for (var i=0; i<radiobuttons.length; i++) {
+                if(radiobuttons[i].checked){
+                  checkedRadio=radiobuttons[i].value;
+                  }
+                }
+
+              var xmlhttpf=new XMLHttpRequest();
+              xmlhttpf.onreadystatechange=function(){
+                if(xmlhttpf.readyState==4 && xmlhttpf.status==200){
+                  console.log(xmlhttpf.responseText);
+                  var data=JSON.parse(xmlhttpf.responseText);
+                  console.log(data);
+                  if(data.success){
+                    alert('File uploaded');
+                    }
+                  }
+                };
+              xmlhttpf.open("POST",apiURL+"?schoolid="+schoolid+"&username="+user+"&token="+token+"&action=poststatementphoto&post=true",true);
+              xmlhttpf.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+              xmlhttpf.send(JSON.stringify({students:checkedCheckboxes,photos:imagesdata,skillid:checkedRadio}));
+              }
+            };
+          })(files[i]);
+
+        reader.readAsDataURL(files[i]);
+        }
+
+      return false;
+      };
+    
+    
+    document.getElementById('register').style.display='block';
+    function register(){
+      /*Makes call to get the schools: http://demo.learningdata.net/apis/classis?email=EMAIL&action=getschools*/
+      /*Stores the schoolid and email on the phone*/
+      document.getElementById('register').style.display='none';
+      document.getElementById('config').style.display='block';
+      /*Sends query with email and schoolid*/
+      /*Receives username and token by email to insert them in the next step*/
+      }
+
+    function configure(){
+      document.getElementById('config').style.display='none';
+      /*Stores the username and token for api calls*/
+      document.getElementById('params').style.display='block';
+      }
+
+    function submit(){
+      document.getElementById('params').style.display='none';
+      /*Makes the calls sending the necessary parameters*/
+      /*No need for storing any parameter*/
+      statementsbody();
+      }
+</script>
+    </div>
+ </div>        
+  </body>
+</html>
